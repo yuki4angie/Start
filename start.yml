@@ -1,0 +1,56 @@
+- name: Verificando varibles de autenticación en Huawei Cloud
+  hosts: localhost
+  gather_facts: no
+  vars:
+    auth_url: "https://iam.myhuaweicloud.com/v3/auth/tokens"
+    username: "angie"
+    password: "4ng13Ch1r3$16"
+    domain_name: "DemoHuawei_bot"
+    project_name: "la-south-2_BlueSpace_DEV"
+    proj_id: "53823225be174b7096cb48515108aea5"
+      
+  tasks:
+    - name: Obtener token de autenticación
+      uri:
+        url: "{{auth_url}}"
+        method: POST
+        body_format: json
+        body:
+          auth:
+            identity:
+              methods:
+                - password
+              password:
+                user:
+                  name: "{{username}}"
+                  password: "{{password}}"
+                  domain:
+                    name: "{{domain_name}}"
+            scope:
+              project:
+                name: "{{project_name}}"
+        headers:
+          Content-Type: "application/json"
+          Cache-Control: "no-cache, no-store, must-revalidate"
+        validate_certs: no
+        return_content: yes
+      register: token_response
+      ignore_errors: yes
+
+    - name: Imprimir token de autenticación
+      debug:
+        var: token_response.x_subject_token
+
+    - name: Encender la maquina virtual {{vm_id}}  
+      uri:
+        url: https://ecs.la-south-2.myhuaweicloud.com/v1/{{proj_id}}/cloudservers/action
+        method: POST
+        body_format: json
+        body:
+          os-start:
+            servers: 
+              - id: "{{vm_id}}"
+        headers:
+          Content-Type: "application/json"
+          X-Auth-Token: "{{token_response.x_subject_token}}"        
+        validate_certs: no
