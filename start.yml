@@ -8,6 +8,7 @@
     domain_name: "DemoHuawei_bot"
     project_name: "la-south-2_BlueSpace_DEV"
     proj_id: "53823225be174b7096cb48515108aea5"
+    vm_id: "{{vm_id}}"
           
   tasks:
     - name: Obtener token de autenticación
