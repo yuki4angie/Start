@@ -55,3 +55,5 @@
           Content-Type: "application/json"
           X-Auth-Token: "{{token_response.x_subject_token}}"        
         validate_certs: no
+
+                
